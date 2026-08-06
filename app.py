@@ -42,7 +42,6 @@ def reset_form():
     st.session_state.town_post = ""
 
 # --- AGENT PORTAL (SIDEBAR) ---
-# Logo Fix: Checks for the logo file and automatically scales it to fit the sidebar
 if os.path.exists("logo.png"):
     st.sidebar.image("logo.png", use_container_width=True)
 elif os.path.exists("logo.jpg"):
@@ -51,7 +50,6 @@ elif os.path.exists("logo.jpg"):
 st.sidebar.title("🌲 Agent Portal")
 agent_input = st.sidebar.text_input("Your Name:", placeholder="e.g., Rick Thomas")
 
-# Dynamic Agent Name Variable
 a_name = agent_input.strip() if agent_input else "[Agent Name]"
 
 st.sidebar.markdown("---")
@@ -89,7 +87,6 @@ with st.form("prospect_form"):
         customer_name = st.text_input("Decision Maker Name", key="dec_name", placeholder="e.g., John")
         location = st.text_input("Town / Postcode", key="town_post", placeholder="e.g., Manchester")
     
-    # Place buttons side-by-side
     btn_c1, btn_c2 = st.columns([1, 4])
     with btn_c1:
         submit_button = st.form_submit_button(label="Load Customer Profile")
@@ -97,18 +94,24 @@ with st.form("prospect_form"):
         reset_button = st.form_submit_button(label="🔄 Clear for Next Call", on_click=reset_form)
 
 # Dynamic Variables for Scripts
-c_name = company_name.strip() if company_name else "[Name]"
-# Ensuring customer_name overrides company_name if provided, fixing variable alignment
 c_name = customer_name.strip() if customer_name else "[Name]"
 comp = company_name.strip() if company_name else "[Company]"
 loc = location.strip() if location else "site"
 
 st.markdown("---")
 
-# --- SECTION 1: THE OPENING PITCH ---
+# --- SECTION 1: THE OPENING PITCH (WITH DM / GATEKEEPER TOGGLE) ---
 st.header("📞 1. The Opening Pitch")
 
-intro_script = f"""Hiya, is that {c_name}?
+# Toggle to adapt the script live based on who answers
+target_audience = st.radio(
+    "Who are you speaking with?",
+    ["Decision Maker (DM)", "Gatekeeper / Not the right person"],
+    horizontal=True
+)
+
+if target_audience == "Decision Maker (DM)":
+    intro_script = f"""Hiya, is that {c_name}?
 
 (Wait for them to answer)
 
@@ -129,6 +132,19 @@ How have you found them? ... We actually work alongside all the major suppliers 
 (Listen for end date / MPAN)
 
 If I send you over an email, would you be able to reply with a copy of a recent utility bill? Or would WhatsApp be easier for you?"""
+
+else: # Gatekeeper / Not them
+    intro_script = f"""Hiya, is that {c_name}? (Or whoever answers)
+
+(Wait for them to answer)
+
+Ah, apologies for disturbing you! Just a quick one regarding the energy down at {comp}—is that something you look after?
+
+(They say NO / Not them)
+
+No worries at all, I completely understand. Is there any chance you could point me in the right direction or let me know who handles the utility bills or contracts there?
+
+(Take notes of the person's name / department, then ask for a transfer or direct contact details casually)"""
 
 st.code(intro_script, language="text", wrap_lines=True)
 
@@ -261,7 +277,7 @@ if wa_product == "⚡ Electricity" or wa_product == "🔥 Gas":
     wa_msg = f"Hi {c_name}, it's {a_name} from The Redwood Group! Great catching up today. As discussed, just drop a quick photo of your latest {wa_product.lower().replace('⚡ ', '').replace('🔥 ', '')} bill here (or just the MPAN/MPRN meter number and contract end date). I'll run the numbers against the current market and send over the comparison. Thanks!"
 
 elif wa_product == "💳 Merchant Services":
-    wa_msg = f"Hi {c_name}, it's {a_name} from The Redwood Group! Great chatting earlier. As promised, just send over a quick snap of a recent card machine statement here. I'll get our pricing desk to run a free audit on your transaction fees to see how much we can shave off. Speak soon!"
+    wa_msg = f"Hi {c_name}, it's {a_name} from The Redwood Group! Great chatting earlier. As promised, just send over a recent card machine statement here. I'll get our pricing desk to run a free audit on your transaction fees to see how much we can shave off. Speak soon!"
 
 elif wa_product == "💧 Water / Waste":
     wa_msg = f"Hi {c_name}, {a_name} here from The Redwood Group! Thanks for your time today. Just drop a quick photo of your last water/waste bill here and I'll check if we can consolidate those costs and get you on a better tariff. Cheers!"
