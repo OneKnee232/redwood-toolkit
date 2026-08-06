@@ -104,7 +104,16 @@ st.markdown("---")
 st.header("📞 1. Interactive Call Script")
 
 st.markdown("**Step 1: The Intro**")
-intro_script = f"Hiya, is that {c_name}?\n\n(Wait for them to answer)\n\nPerfect! It's just a quick call regarding the energy down at {comp}, is that something you deal with?"
+intro_script = f"""Hiya, is that {c_name}?
+
+(Wait for them to answer)
+
+Perfect! It's just a quick call regarding the energy down at {comp}, is that something you deal with?
+
+(Wait for them to answer)
+
+[If they say YES, but didn't confirm their name]:
+"Brilliant, and sorry, who am I speaking with?" OR "Just to confirm, I'm speaking with {c_name}?"""
 st.info("Read this aloud:")
 st.code(intro_script, language="text", wrap_lines=True)
 
