@@ -117,15 +117,33 @@ target_audience = st.radio(
 )
 
 if target_audience == "I am the Decision Maker (DM)":
-    st.markdown("**Step 3: The DM Pitch**")
+    st.markdown("**Step 3: The DM Pitch & Live Notes**")
     
-    dm_actual_name = st.text_input("Confirm Decision Maker's Name:", value=c_name if c_name != "[Name]" else "")
+    dm_actual_name = st.text_input("Confirm Decision Maker's Name:", value=c_name if c_name != "[Name]" else "", key="dm_conf_name")
     dm_n = dm_actual_name.strip() if dm_actual_name else "[Name]"
     
-    dm_script = f"Perfect {dm_n}, we're calling as we believe you're currently in your renewal window, does that sound about right?\n\n(Wait for them to answer)\n\nThe only reason I'm asking is because we're looking to gather some quotes for your renewal. Are you just looking for a cheaper price right now, or is there a certain supplier you had in mind, like EDF or British Gas?\n\n(Wait for them to answer)\n\nWho are you currently with?\n\n(Wait for them to name the supplier)\n\nHow have you found them? ... We actually work alongside all the major suppliers in the UK and get preferential rates. Do you have an end date for your current supply?\n\n(Listen for end date / MPAN)\n\nIf I send you over an email, would you be able to reply with a copy of a recent utility bill? Or would WhatsApp be easier for you?"
+    dm_script_p1 = f"Perfect {dm_n}, we're calling as we believe you're currently in your renewal window, does that sound about right?\n\n(Wait for them to answer)\n\nThe only reason I'm asking is because we're just gathering a bit of quick information on how your site is currently set up ahead of that renewal. Are you strictly looking for a better price right now, or is there a certain supplier you had in mind, like EDF or British Gas?\n\n(Wait for them to answer. If they tell you who they are currently with here, SKIP the next question!)\n\n[If they didn't mention it]: And who is supplying the site currently?"
+    st.success("1. Pitch and Probe:")
+    st.code(dm_script_p1, language="text", wrap_lines=True)
     
-    st.success("Continue with the pitch:")
-    st.code(dm_script, language="text", wrap_lines=True)
+    # Input for Supplier -> Injects into next script
+    current_supplier = st.text_input("Who did they say they are with? (Type here to update script):", placeholder="e.g., British Gas", key="dm_sup")
+    sup_insert = current_supplier.strip() if current_supplier else "them"
+    
+    dm_script_p2 = f"How have you found {sup_insert}? ... We actually work alongside all the major suppliers in the UK and get preferential rates. Do you have an end date for your current supply?\n\n(Listen for end date / MPAN)\n\nIf I send you over an email, would you be able to reply with a copy of a recent utility bill? Or would WhatsApp be easier for you?"
+    st.success("2. Supplier follow-up and close:")
+    st.code(dm_script_p2, language="text", wrap_lines=True)
+    
+    # Input for Callback
+    dm_callback = st.text_input("Callback Date / Time / Details:", placeholder="e.g., Call back Thursday at 2pm", key="dm_cb")
+    
+    # Auto-Generated CRM Note
+    st.info("📋 Auto-Generated Call Note (Click top right to copy):")
+    final_sup = current_supplier if current_supplier else "TBC"
+    final_cb = dm_callback if dm_callback else "Pending/No callback set"
+    dm_note_text = f"Spoke with {dm_n} (Decision Maker).\nAdvised currently supplied by: {final_sup}.\nOutcome / Callback: {final_cb}\nAction: Pushed for bill via Email/WhatsApp to run market comparison."
+    st.code(dm_note_text, language="text", wrap_lines=True)
+
 
 elif target_audience == "No, I don't deal with that (Gatekeeper)":
     st.markdown("**Step 3: Gatekeeper Navigation**")
@@ -134,14 +152,14 @@ elif target_audience == "No, I don't deal with that (Gatekeeper)":
     st.warning("1. Deflect and ask for the right person:")
     st.code(gk_script_1, language="text", wrap_lines=True)
     
-    st.markdown("**Step 4: Probe & Transfer**")
+    st.markdown("**Step 4: Probe, Transfer & Live Notes**")
     gk_col1, gk_col2, gk_col3 = st.columns(3)
     with gk_col1:
-        gk_name = st.text_input("Gatekeeper's Name:", placeholder="e.g., Sarah")
+        gk_name = st.text_input("Gatekeeper's Name:", placeholder="e.g., Sarah", key="gk_name")
     with gk_col2:
-        new_dm = st.text_input("Who actually handles it?", placeholder="e.g., David")
+        new_dm = st.text_input("Who actually handles it?", placeholder="e.g., David", key="gk_dm")
     with gk_col3:
-        direct_num = st.text_input("Direct Number / Ext:", placeholder="e.g., Option 2")
+        direct_num = st.text_input("Direct Number / Ext:", placeholder="e.g., Option 2", key="gk_num")
         
     gk_n = f" {gk_name.strip()}" if gk_name else ""
     ndm = new_dm.strip() if new_dm else "the person who handles the utility contracts"
@@ -153,6 +171,17 @@ elif target_audience == "No, I don't deal with that (Gatekeeper)":
     gk_script_3 = f"Perfect. Is {ndm} around at the moment for a quick chat, or is there a better time to catch them?"
     st.warning(f"3. Ask for {ndm}:")
     st.code(gk_script_3, language="text", wrap_lines=True)
+    
+    # Input for Callback
+    gk_callback = st.text_input("Callback Date / Time / Details:", placeholder="e.g., Try again tomorrow morning before 10", key="gk_cb")
+    
+    # Auto-Generated CRM Note
+    st.info("📋 Auto-Generated Call Note (Click top right to copy):")
+    final_gk = gk_name.strip() if gk_name else "Unknown Gatekeeper"
+    final_num = direct_num.strip() if direct_num else "N/A"
+    final_gk_cb = gk_callback if gk_callback else "Pending/No callback set"
+    gk_note_text = f"Spoke with Gatekeeper ({final_gk}).\nAdvised target Decision Maker is: {ndm}\nDirect Contact Info: {final_num}\nOutcome / Callback: {final_gk_cb}"
+    st.code(gk_note_text, language="text", wrap_lines=True)
 
 st.markdown("---")
 
@@ -185,8 +214,8 @@ with st.expander("🆘 CALL RESCUE (Hanging up)"):
 
 st.markdown("---")
 
-# --- SECTION 3: LIVE INTELLIGENCE & CRM NOTES ---
-st.header("🏢 3. Live Intelligence & CRM Notes")
+# --- SECTION 3: LIVE INTELLIGENCE ---
+st.header("🏢 3. Cross-Sell Intelligence")
 
 if submit_button and company_name:
     business_lower = business_type.lower()
@@ -194,15 +223,13 @@ if submit_button and company_name:
     is_retail = any(w in business_lower for w in ["shop", "store", "retail", "salon"])
     is_office = any(w in business_lower for w in ["office", "consultancy", "tech", "agency"])
     
-    st.markdown("**Utility Cross-Sell Viability:**")
+    st.markdown("**Utility Cross-Sell Viability based on Industry:**")
     st.info(f"⚡ Energy: **{'High Priority' if not is_office else 'Medium Match'}**")
     st.info(f"💧 Water/Waste: **{'High Priority' if is_hosp else 'Low Match'}**")
     st.info(f"💳 Merchant: **{'Critical' if (is_hosp or is_retail) else 'Low Match'}**")
     st.info(f"🌐 Broadband: **{'High Priority' if is_office else 'Standard'}**")
-    
-    st.markdown("**1-Click MaxContact Note:**")
-    crm_note = f"Agent: {a_name}\nCompany: {company_name}\nContact: {c_name}\nSector: {business_type}\nLocation: {location}\nAction: Pitched renewal window. Pushed for MPAN/Bill.\nCross-Sell Targets: Energy, Merchant Services."
-    st.code(crm_note, language="text", wrap_lines=True)
+else:
+    st.markdown("*(Load a customer profile at the top to see cross-sell opportunities)*")
 
 st.markdown("---")
 
