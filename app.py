@@ -2,9 +2,28 @@ import streamlit as st
 import urllib.parse
 from datetime import datetime, timedelta
 import pytz
+import streamlit.components.v1 as components
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(page_title="The Redwood Group | Sales Toolkit", page_icon="🌲", layout="wide")
+
+# --- CUSTOM CSS (THE READABILITY FIX) ---
+# This forces the script boxes to word-wrap and use normal, easy-to-read fonts
+st.markdown("""
+    <style>
+    pre {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        overflow-x: hidden !important;
+    }
+    code {
+        white-space: pre-wrap !important;
+        font-family: system-ui, -apple-system, sans-serif !important;
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # --- AGENT PORTAL (SIDEBAR) ---
 st.sidebar.title("🌲 Agent Portal")
@@ -18,6 +37,33 @@ else:
 
 # Dynamic Agent Name Variable
 a_name = agent_input.strip() if agent_input else "[Agent Name]"
+
+st.sidebar.markdown("---")
+
+# --- AUTO-SAVING NOTES TAB ---
+st.sidebar.header("📝 Auto-Saving Scratchpad")
+st.sidebar.markdown("Type MPANs or notes here. If your power cuts or page refreshes, your notes will still be here.")
+
+# Custom HTML/JS text area that saves to the browser's local storage automatically
+notes_html = """
+    <div style="width: 100%; height: 100%;">
+        <textarea id="agentNotes" 
+        style="width: 100%; height: 400px; background-color: #1e1e24; color: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #4b4b4b; font-family: system-ui, sans-serif; font-size: 14px; resize: vertical;" 
+        placeholder="Paste customer details, MPANs, or quick notes here..."></textarea>
+    </div>
+    <script>
+        const notesField = document.getElementById('agentNotes');
+        // Load saved notes on startup
+        notesField.value = localStorage.getItem('redwood_agent_notes') || '';
+        // Save notes on every keystroke
+        notesField.addEventListener('input', function() {
+            localStorage.setItem('redwood_agent_notes', notesField.value);
+        });
+    </script>
+"""
+# Render the HTML component in the sidebar
+with st.sidebar:
+    components.html(notes_html, height=420)
 
 # --- MAIN DASHBOARD ---
 st.title("🌲 The Redwood Group - Sales Intelligence Toolkit")
@@ -81,22 +127,21 @@ st.markdown("---")
 st.header("📅 3. Strategic Callbacks & Qualification")
 st.markdown("Take control of the pipeline and show the customer we respect their time.")
 
-colX, colY, colZ = st.columns(3)
+colX, colY = st.columns(2)
 
 with colX:
     with st.expander("❓ The 'Price vs. Supplier' Qualifier"):
         script_qual = f"Just before we run the numbers, {c_name}, let me ask you: are you strictly looking for a better price right now to combat inflation, or is there a certain supplier in the market you'd actually prefer to move to?"
         st.code(script_qual, language="text")
 
+    with st.expander("⏳ Pinning the Callback (No 'Next Week')"):
+        script_pin = f"I don't want to just vaguely call you 'next week' and catch you at another bad time. Let's lock in 5 minutes. Would Tuesday or Thursday be better for you? ... Perfect, and what time on that day lets you actually sit down for a moment?"
+        st.code(script_pin, language="text")
+
 with colY:
     with st.expander("📆 The 'Admin Day' Empathy Play"):
         script_admin = f"I completely understand you have a business to run, {c_name}, and I don't want to take you off the floor. Do you have a specific 'admin day' where you actually sit down to look at the paperwork? I just need a few minutes of your time then."
         st.code(script_admin, language="text")
-
-with colZ:
-    with st.expander("⏳ Pinning the Callback (No 'Next Week')"):
-        script_pin = f"I don't want to just vaguely call you 'next week' and catch you at another bad time. Let's lock in 5 minutes. Would Tuesday or Thursday be better for you? ... Perfect, and what time on that day lets you actually sit down for a moment?"
-        st.code(script_pin, language="text")
 
 st.markdown("---")
 
@@ -129,7 +174,6 @@ if st.button("Generate Calendar Links"):
     fmt_start = utc_start.strftime('%Y%m%dT%H%M%SZ')
     fmt_end = utc_end.strftime('%Y%m%dT%H%M%SZ')
     
-    # Fallback for company name if not filled out
     comp = company_name if 'company_name' in locals() and company_name else "Client"
     
     # Meeting Details
@@ -160,7 +204,7 @@ st.markdown("---")
 st.header("🎯 5. Interactive Pivot Board (1-Click Scripts)")
 st.markdown("Hover over the top right corner of any script to click the **Copy icon**, then paste directly into MaxContact.")
 
-colA, colB, colC = st.columns(3)
+colA, colB = st.columns(2)
 
 with colA:
     with st.expander("🚨 'I won't send a bill / too much hassle'"):
@@ -171,6 +215,10 @@ with colA:
         script_2 = f"That’s completely normal, {c_name}. But because of the global tensions pushing up energy costs, suppliers have opened their renewal windows 12 months early. If your end date drops within that window, we lock in today's rates before inflation drives them higher. What month does yours end?"
         st.code(script_2, language="text")
 
+    with st.expander("💳 Pivot to Merchant Services"):
+        script_5 = f"Understood on the energy, {c_name}. Since we manage all site overheads at The Redwood Group, we're seeing businesses in your sector getting hammered by card terminal fees right now due to inflation. Who currently provides your merchant services?"
+        st.code(script_5, language="text")
+
 with colB:
     with st.expander("🚨 'Just email me your prices'"):
         script_3 = f"I can definitely do that, {c_name}, but energy prices shift by the hour based on the wholesale market. If I send a generic rate sheet, it won't match your actual meter profile. Let's grab your MPAN right now while we're on the phone, and I'll text you a custom, verified price check in 10 minutes. Fair?"
@@ -179,11 +227,6 @@ with colB:
     with st.expander("🚨 'Call me back next year'"):
         script_4 = f"Will do. But just a heads-up, {c_name}, wholesale prices are dipping right now amidst all the inflation chaos. If we log your meter number today, my system will auto-alert you the second the market hits the floor, rather than guessing next year. Got your meter serial number handy?"
         st.code(script_4, language="text")
-
-with colC:
-    with st.expander("💳 Pivot to Merchant Services"):
-        script_5 = f"Understood on the energy, {c_name}. Since we manage all site overheads at The Redwood Group, we're seeing businesses in your sector getting hammered by card terminal fees right now due to inflation. Who currently provides your merchant services?"
-        st.code(script_5, language="text")
         
     with st.expander("🆘 CALL RESCUE (Hanging up)"):
         script_6 = f"{c_name}, I can hear I've caught you at the absolute worst time, and you're probably getting ten calls a day like this. If I promise to get off the phone in exactly 30 seconds, can I ask you just one direct question about how inflation is impacting your site?"
@@ -204,7 +247,6 @@ with wa_col1:
 with wa_col2:
     wa_number = st.text_input("Customer Mobile Number:", placeholder="e.g., 07712 345 678")
 
-# Generate the custom message based on the product
 if wa_product == "⚡ Electricity" or wa_product == "🔥 Gas":
     wa_msg = f"Hi {c_name}, it's {a_name} from The Redwood Group! Great catching up today. As discussed, just drop a quick photo of your latest {wa_product.lower().replace('⚡ ', '').replace('🔥 ', '')} bill here (or just the MPAN/MPRN meter number and contract end date). I'll run the numbers against the current market and send over the comparison. Thanks!"
 
@@ -214,7 +256,6 @@ elif wa_product == "💳 Merchant Services":
 elif wa_product == "💧 Water / Waste":
     wa_msg = f"Hi {c_name}, {a_name} here from The Redwood Group! Thanks for your time today. Just drop a quick photo of your last water/waste bill here and I'll check if we can consolidate those costs and get you on a better tariff. Cheers!"
 
-# Create the internal delegation message
 fallback_number = wa_number if wa_number else "[Insert Number]"
 comp2 = company_name if 'company_name' in locals() and company_name else "[Company]"
 
@@ -226,7 +267,5 @@ Message to send:
 "{wa_msg}"
 """
 
-# Display the message with a 1-click copy box
 st.info("Hover over the top right to click the **Copy icon**, then paste this directly to your admin/WhatsApp team.")
 st.code(internal_handover, language="text")
-
