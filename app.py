@@ -63,12 +63,15 @@ with st.sidebar:
 # --- MAIN DASHBOARD ---
 st.title("🌲 The Redwood Group - Sales Intelligence Toolkit")
 
-# --- TOP FORM (Stacked for narrow screens) ---
+# --- TOP FORM (2-Column Compact Grid) ---
 with st.form("prospect_form"):
-    company_name = st.text_input("Company Name", placeholder="e.g., Apex Catering Ltd")
-    customer_name = st.text_input("Decision Maker Name", placeholder="e.g., John")
-    business_type = st.text_input("Industry / Sector", placeholder="e.g., Restaurant, Retail")
-    location = st.text_input("Town / Postcode", placeholder="e.g., Manchester")
+    form_c1, form_c2 = st.columns(2)
+    with form_c1:
+        company_name = st.text_input("Company Name", placeholder="e.g., Apex Catering Ltd")
+        business_type = st.text_input("Industry / Sector", placeholder="e.g., Restaurant, Retail")
+    with form_c2:
+        customer_name = st.text_input("Decision Maker Name", placeholder="e.g., John")
+        location = st.text_input("Town / Postcode", placeholder="e.g., Manchester")
     
     submit_button = st.form_submit_button(label="Load Customer Profile")
 
@@ -108,7 +111,7 @@ st.code(intro_script, language="text", wrap_lines=True)
 
 st.markdown("---")
 
-# --- SECTION 2: INTERACTIVE PIVOT BOARD (Moved up & stacked) ---
+# --- SECTION 2: INTERACTIVE PIVOT BOARD ---
 st.header("🎯 2. Interactive Pivot Board")
 
 with st.expander("🚨 'I won't send a bill / too much hassle'"):
@@ -171,7 +174,7 @@ st.code(window_pitch, language="text", wrap_lines=True)
 
 st.markdown("---")
 
-# --- SECTION 5: STRATEGIC CALLBACKS (Stacked) ---
+# --- SECTION 5: STRATEGIC CALLBACKS ---
 st.header("📅 5. Strategic Callbacks")
 
 with st.expander("❓ 'Price vs. Supplier' Qualifier"):
@@ -188,7 +191,7 @@ with st.expander("📆 'Admin Day' Empathy Play"):
 
 st.markdown("---")
 
-# --- SECTION 6: CALLBACK SCHEDULER (Stacked) ---
+# --- SECTION 6: CALLBACK SCHEDULER ---
 st.header("🗓️ 6. Callback Scheduler")
 
 call_date = st.date_input("Callback Date")
@@ -222,7 +225,7 @@ if st.button("Generate Calendar Links"):
 
 st.markdown("---")
 
-# --- SECTION 7: WHATSAPP QUICK-MESSAGE GENERATOR (Stacked) ---
+# --- SECTION 7: WHATSAPP QUICK-MESSAGE GENERATOR ---
 st.header("📱 7. WhatsApp Internal Handover")
 
 wa_product = st.radio(
