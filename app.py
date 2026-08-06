@@ -31,6 +31,7 @@ keys_to_track = [
     "dm_conf_name", "dm_sup", "dm_cb", 
     "sorted_sup", "sorted_cb", 
     "gk_name", "gk_dm", "gk_num", "gk_cb", 
+    "broker_cb",
     "wa_number"
 ]
 
@@ -135,7 +136,7 @@ st.code(intro_script, language="text", wrap_lines=True)
 st.markdown("**Step 2: Who answered the phone?**")
 target_audience = st.radio(
     "Select their response to build the next step:",
-    ["Decision Maker (DM)", "Gatekeeper (Not them)", "Objection: 'We're sorted'"],
+    ["Decision Maker (DM)", "Gatekeeper (Not them)", "Objection: 'We're sorted'", "Objection: 'We have a broker'"],
     key="target_audience",
     horizontal=True
 )
@@ -187,6 +188,23 @@ elif target_audience == "Objection: 'We're sorted'":
     sorted_note_text = f"Customer initially objected with 'sorted'.\nPivoted and uncovered supplier is: {final_sorted_sup}.\nOutcome / Callback: {final_sorted_cb}"
     st.code(sorted_note_text, language="text", wrap_lines=True)
 
+elif target_audience == "Objection: 'We have a broker'":
+    st.markdown("**Step 3: The Broker Pivot**")
+    
+    broker_script_1 = f"I completely understand that you're happy with your current broker, {c_name}, especially as they already look after you and your business. The only thing I would suggest is allowing us to provide a second opinion on the current market. This is simply to ensure you're receiving the best value and service available, without causing any disruption to your existing arrangements."
+    st.warning("1. Validate and offer a second opinion:")
+    st.code(broker_script_1, language="text", wrap_lines=True)
+    
+    broker_script_2 = f"We are actually a one-stop shop and can assist with a range of other business services, including water and waste management, card payment solutions, and broadband services."
+    st.success("2. Pivot to the Cross-Sell (One-Stop Shop):")
+    st.code(broker_script_2, language="text", wrap_lines=True)
+
+    broker_callback = st.text_input("Callback Date / Time / Details:", placeholder="e.g., Send email with info, call back Tuesday", key="broker_cb")
+    
+    st.info("📋 Auto-Generated Call Note (Click top right to copy):")
+    final_broker_cb = broker_callback if broker_callback else "Pending / No callback set"
+    broker_note_text = f"Customer objected with 'Already have a broker'.\nPitched second opinion and one-stop shop (Water, Merchant, Broadband).\nOutcome / Callback: {final_broker_cb}"
+    st.code(broker_note_text, language="text", wrap_lines=True)
 
 elif target_audience == "Gatekeeper (Not them)":
     st.markdown("**Step 3: Gatekeeper Navigation**")
