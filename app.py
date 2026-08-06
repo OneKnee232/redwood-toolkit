@@ -112,27 +112,27 @@ st.markdown("---")
 st.header("🎯 2. Interactive Pivot Board")
 
 with st.expander("🚨 'I won't send a bill / too much hassle'"):
-    script_1 = f"I completely understand data privacy, {c_name}, and I know you don't have time to dig through files. Just look at the top left of your statement for your MPAN number (or meter serial number) and tell me your contract end date. That's all my pricing desk needs to run a blind check against the current inflated market."
+    script_1 = f"I completely understand, {c_name}, and I know you don't have time to dig through files. Just look at the top left of your statement for your MPAN number (or meter serial number) and tell me your contract end date. That's all my pricing desk needs to run a blind check against the current market."
     st.code(script_1, language="text", wrap_lines=True)
 
 with st.expander("🚨 'We’re already locked into a contract'"):
-    script_2 = f"That’s completely normal, {c_name}. But because of the global tensions pushing up energy costs, suppliers have opened their renewal windows 12 months early. If your end date drops within that window, we lock in today's rates before inflation drives them higher. What month does yours end?"
+    script_2 = f"That’s completely normal, {c_name}. But because prices have been so up and down, suppliers have opened their renewal windows 12 months early. If your end date drops within that window, we lock in today's rates before they creep back up. What month does yours end?"
     st.code(script_2, language="text", wrap_lines=True)
 
 with st.expander("🚨 'Just email me your prices'"):
-    script_3 = f"I can definitely do that, {c_name}, but energy prices shift by the hour based on the wholesale market. If I send a generic rate sheet, it won't match your actual meter profile. Let's grab your MPAN right now while we're on the phone, and I'll text you a custom, verified price check in 10 minutes. Fair?"
+    script_3 = f"I can definitely do that, {c_name}, but energy prices shift by the hour. If I send a generic rate sheet, it won't match your actual meter profile. Let's grab your MPAN right now while we're on the phone, and I'll text you a custom, verified price check in 10 minutes. Fair?"
     st.code(script_3, language="text", wrap_lines=True)
     
 with st.expander("🚨 'Call me back next year'"):
-    script_4 = f"Will do. But just a heads-up, {c_name}, wholesale prices are dipping right now amidst all the inflation chaos. If we log your meter number today, my system will auto-alert you the second the market hits the floor, rather than guessing next year. Got your meter serial number handy?"
+    script_4 = f"Will do. But just a heads-up, {c_name}, wholesale prices are dipping right now. If we log your meter number today, my system will auto-alert you the second the market hits the floor, rather than guessing next year. Got your meter serial number handy?"
     st.code(script_4, language="text", wrap_lines=True)
 
 with st.expander("💳 Pivot to Merchant Services"):
-    script_5 = f"Understood on the energy, {c_name}. Since we manage all site overheads at The Redwood Group, we're seeing businesses in your sector getting hammered by card terminal fees right now due to inflation. Who currently provides your merchant services?"
+    script_5 = f"Understood on the energy, {c_name}. Since we manage all site overheads at The Redwood Group, we're seeing businesses in your sector getting hammered by card terminal fees right now. Who currently provides your merchant services?"
     st.code(script_5, language="text", wrap_lines=True)
     
 with st.expander("🆘 CALL RESCUE (Hanging up)"):
-    script_6 = f"{c_name}, I can hear I've caught you at the absolute worst time, and you're probably getting ten calls a day like this. If I promise to get off the phone in exactly 30 seconds, can I ask you just one direct question about how inflation is impacting your site?"
+    script_6 = f"{c_name}, I can hear I've caught you at the absolute worst time, and you're probably getting ten calls a day like this. If I promise to get off the phone in exactly 30 seconds, can I ask you just one direct question about your site overheads?"
     st.code(script_6, language="text", wrap_lines=True)
 
 st.markdown("---")
@@ -161,12 +161,12 @@ st.markdown("---")
 # --- SECTION 4: MARKET URGENCY ---
 st.header("🌍 4. Market Urgency")
 
-st.markdown("**The Global Conflict & Inflation Pitch:**")
-war_pitch = f"With the ongoing geopolitical conflicts and inflation squeezing the markets, wholesale gas and electricity prices are incredibly volatile right now. Suppliers are using this as an excuse to hike up out-of-contract rates. My job isn't just to quote you; it's to lock in a protective shield around your business overheads before the next market spike hits."
+st.markdown("**The Market Pitch:**")
+war_pitch = f"Prices are all over the place right now with everything going on, and suppliers are using it as an excuse to bump up rates when contracts end. My job isn't just to quote you; it's to make sure you're protected so you don't get caught out by sudden price jumps."
 st.code(war_pitch, language="text", wrap_lines=True)
 
 st.markdown("**The 12-Month Window Reality:**")
-window_pitch = f"A lot of directors don't realize this, {c_name}, but because of the current inflation crisis, suppliers have opened up their renewal windows a full 12 months in advance. If your contract ends anywhere in the next year, we can secure today's dipped rates now, rather than leaving you at the mercy of whatever the global market does next year."
+window_pitch = f"A lot of business owners don't actually know this, {c_name}, but because the market is so up and down, suppliers are letting you renew up to 12 months early. If your contract is ending anytime in the next year, we can lock in today's lower rates now, so you aren't gambling on where prices might be next year."
 st.code(window_pitch, language="text", wrap_lines=True)
 
 st.markdown("---")
@@ -175,7 +175,7 @@ st.markdown("---")
 st.header("📅 5. Strategic Callbacks")
 
 with st.expander("❓ 'Price vs. Supplier' Qualifier"):
-    script_qual = f"Just before we run the numbers, {c_name}, let me ask you: are you strictly looking for a better price right now to combat inflation, or is there a certain supplier in the market you'd actually prefer to move to?"
+    script_qual = f"Just before we run the numbers, {c_name}, let me ask you: are you strictly looking for a better price right now, or is there a certain supplier in the market you'd actually prefer to move to?"
     st.code(script_qual, language="text", wrap_lines=True)
 
 with st.expander("⏳ Pinning the Callback (No 'Next Week')"):
