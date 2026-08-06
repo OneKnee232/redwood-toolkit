@@ -100,53 +100,49 @@ loc = location.strip() if location else "site"
 
 st.markdown("---")
 
-# --- SECTION 1: THE OPENING PITCH (WITH DM / GATEKEEPER TOGGLE) ---
-st.header("📞 1. The Opening Pitch")
+# --- SECTION 1: INTERACTIVE CALL SCRIPT BUILDER ---
+st.header("📞 1. Interactive Call Script")
 
-# Toggle to adapt the script live based on who answers
+st.markdown("**Step 1: The Intro**")
+intro_script = f"Hiya, is that {c_name}?\n\n(Wait for them to answer)\n\nPerfect! It's just a quick call regarding the energy down at {comp}, is that something you deal with?"
+st.info("Read this aloud:")
+st.code(intro_script, language="text", wrap_lines=True)
+
+st.markdown("**Step 2: Who answered the phone?**")
 target_audience = st.radio(
-    "Who are you speaking with?",
-    ["Decision Maker (DM)", "Gatekeeper / Not the right person"],
+    "Select their response to build the next step:",
+    ["I am the Decision Maker (DM)", "No, I don't deal with that (Gatekeeper)"],
+    index=None, # Leaves it unselected initially
     horizontal=True
 )
 
-if target_audience == "Decision Maker (DM)":
-    intro_script = f"""Hiya, is that {c_name}?
+if target_audience == "I am the Decision Maker (DM)":
+    st.markdown("**Step 3: The DM Pitch**")
+    dm_script = f"Brilliant, you're speaking to {a_name} at The Redwood Group. We're calling as we believe you're currently in your renewal window, does that sound about right?\n\n(Wait for them to answer)\n\nThe only reason I'm asking is because we're looking to gather some quotes for your renewal. Who are you currently with?\n\n(Wait for them to name the supplier)\n\nHow have you found them? ... We actually work alongside all the major suppliers in the UK and get preferential rates, so if you have a supplier in mind I can prioritise pricing from them. Do you have an end date for your current supply?\n\n(Listen for end date / MPAN)\n\nIf I send you over an email, would you be able to reply with a copy of a recent utility bill? Or would WhatsApp be easier for you?"
+    st.success("Continue with the pitch:")
+    st.code(dm_script, language="text", wrap_lines=True)
 
-(Wait for them to answer)
-
-Perfect! It's just a quick call regarding the energy down at {comp}, is that something you deal with?
-
-(Wait for them to answer)
-
-Brilliant, you're speaking to {a_name} at The Redwood Group. We're calling as we believe you're currently in your renewal window, does that sound about right?
-
-(Wait for them to answer)
-
-The only reason I'm asking is because we're looking to gather some quotes for your renewal. Who are you currently with? 
-
-(Wait for them to name the supplier)
-
-How have you found them? ... We actually work alongside all the major suppliers in the UK and get preferential rates, so if you have a supplier in mind I can prioritise pricing from them. Do you have an end date for your current supply?
-
-(Listen for end date / MPAN)
-
-If I send you over an email, would you be able to reply with a copy of a recent utility bill? Or would WhatsApp be easier for you?"""
-
-else: # Gatekeeper / Not them
-    intro_script = f"""Hiya, is that {c_name}? (Or whoever answers)
-
-(Wait for them to answer)
-
-Ah, apologies for disturbing you! Just a quick one regarding the energy down at {comp}—is that something you look after?
-
-(They say NO / Not them)
-
-No worries at all, I completely understand. Is there any chance you could point me in the right direction or let me know who handles the utility bills or contracts there?
-
-(Take notes of the person's name / department, then ask for a transfer or direct contact details casually)"""
-
-st.code(intro_script, language="text", wrap_lines=True)
+elif target_audience == "No, I don't deal with that (Gatekeeper)":
+    st.markdown("**Step 3: Gatekeeper Navigation**")
+    
+    gk_col1, gk_col2 = st.columns(2)
+    with gk_col1:
+        gk_name = st.text_input("Gatekeeper's Name (if they say it):", placeholder="e.g., Sarah")
+    with gk_col2:
+        new_dm = st.text_input("Who actually handles it?", placeholder="e.g., David")
+        
+    gk = f", {gk_name.strip()}" if gk_name else ""
+    ndm = new_dm.strip() if new_dm else "the person who handles the utility contracts"
+    
+    gk_script_1 = f"Ah, apologies for disturbing you! I completely understand. Is there any chance you could point me in the right direction{gk}? Who normally handles the bills for the site?"
+    st.warning("1. Deflect and ask for the right person:")
+    st.code(gk_script_1, language="text", wrap_lines=True)
+    
+    if new_dm:
+        gk_name_short = gk_name.strip() if gk_name else "mate"
+        gk_script_2 = f"Perfect, thanks {gk_name_short}. Is {ndm} around at the moment for a quick chat, or is there a better time to catch them?"
+        st.warning(f"2. Ask for {ndm}:")
+        st.code(gk_script_2, language="text", wrap_lines=True)
 
 st.markdown("---")
 
