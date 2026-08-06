@@ -120,12 +120,12 @@ st.code(intro_script, language="text", wrap_lines=True)
 st.markdown("**Step 2: Who answered the phone?**")
 target_audience = st.radio(
     "Select their response to build the next step:",
-    ["I am the Decision Maker (DM)", "No, I don't deal with that (Gatekeeper)"],
+    ["Decision Maker (DM)", "Gatekeeper (Not them)", "Objection: 'We're sorted'"],
     index=None,
     horizontal=True
 )
 
-if target_audience == "I am the Decision Maker (DM)":
+if target_audience == "Decision Maker (DM)":
     st.markdown("**Step 3: The DM Pitch & Live Notes**")
     
     dm_actual_name = st.text_input("Confirm Decision Maker's Name:", value=c_name if c_name != "[Name]" else "", key="dm_conf_name")
@@ -135,7 +135,6 @@ if target_audience == "I am the Decision Maker (DM)":
     st.success("1. Pitch and Probe:")
     st.code(dm_script_p1, language="text", wrap_lines=True)
     
-    # Input for Supplier -> Injects into next script
     current_supplier = st.text_input("Who did they say they are with? (Type here to update script):", placeholder="e.g., British Gas", key="dm_sup")
     sup_insert = current_supplier.strip() if current_supplier else "them"
     
@@ -143,18 +142,38 @@ if target_audience == "I am the Decision Maker (DM)":
     st.success("2. Supplier follow-up and close:")
     st.code(dm_script_p2, language="text", wrap_lines=True)
     
-    # Input for Callback
     dm_callback = st.text_input("Callback Date / Time / Details:", placeholder="e.g., Call back Thursday at 2pm", key="dm_cb")
     
-    # Auto-Generated CRM Note
     st.info("📋 Auto-Generated Call Note (Click top right to copy):")
     final_sup = current_supplier if current_supplier else "TBC"
     final_cb = dm_callback if dm_callback else "Pending/No callback set"
     dm_note_text = f"Spoke with {dm_n} (Decision Maker).\nAdvised currently supplied by: {final_sup}.\nOutcome / Callback: {final_cb}\nAction: Pushed for bill via Email/WhatsApp to run market comparison."
     st.code(dm_note_text, language="text", wrap_lines=True)
 
+elif target_audience == "Objection: 'We're sorted'":
+    st.markdown("**Step 3: The 'Sorted' Pattern Interrupt**")
+    
+    sorted_script_1 = f"Is that sorted with British Gas or EDF?"
+    st.warning("1. Immediately ask this to break their pattern:")
+    st.code(sorted_script_1, language="text", wrap_lines=True)
+    
+    sorted_supplier = st.text_input("Who did they correct you with? (Type here to update script):", placeholder="e.g., Opus Energy", key="sorted_sup")
+    sorted_sup_insert = sorted_supplier.strip() if sorted_supplier else "them"
+    
+    sorted_script_2 = f"Ah okay, {sorted_sup_insert}. How have you found them? ... We actually work alongside all the major suppliers in the UK and get preferential rates. Even if you're sorted for now, do you happen to know the end date for that contract?"
+    st.success("2. Supplier follow-up:")
+    st.code(sorted_script_2, language="text", wrap_lines=True)
 
-elif target_audience == "No, I don't deal with that (Gatekeeper)":
+    sorted_callback = st.text_input("Callback Date / Time / Details:", placeholder="e.g., Call back Thursday at 2pm", key="sorted_cb")
+    
+    st.info("📋 Auto-Generated Call Note (Click top right to copy):")
+    final_sorted_sup = sorted_supplier if sorted_supplier else "TBC"
+    final_sorted_cb = sorted_callback if sorted_callback else "Pending/No callback set"
+    sorted_note_text = f"Customer initially objected with 'sorted'.\nPivoted and uncovered supplier is: {final_sorted_sup}.\nOutcome / Callback: {final_sorted_cb}"
+    st.code(sorted_note_text, language="text", wrap_lines=True)
+
+
+elif target_audience == "Gatekeeper (Not them)":
     st.markdown("**Step 3: Gatekeeper Navigation**")
     
     gk_script_1 = f"Ah, apologies for disturbing you! I completely understand. Is there any chance you could point me in the right direction? Who normally handles the bills for the business?\n\n(Wait for them to answer)\n\nAlso, sorry, I didn't get your name?"
@@ -181,10 +200,8 @@ elif target_audience == "No, I don't deal with that (Gatekeeper)":
     st.warning(f"3. Ask for {ndm}:")
     st.code(gk_script_3, language="text", wrap_lines=True)
     
-    # Input for Callback
     gk_callback = st.text_input("Callback Date / Time / Details:", placeholder="e.g., Try again tomorrow morning before 10", key="gk_cb")
     
-    # Auto-Generated CRM Note
     st.info("📋 Auto-Generated Call Note (Click top right to copy):")
     final_gk = gk_name.strip() if gk_name else "Unknown Gatekeeper"
     final_num = direct_num.strip() if direct_num else "N/A"
