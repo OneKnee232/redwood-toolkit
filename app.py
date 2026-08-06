@@ -112,37 +112,47 @@ st.markdown("**Step 2: Who answered the phone?**")
 target_audience = st.radio(
     "Select their response to build the next step:",
     ["I am the Decision Maker (DM)", "No, I don't deal with that (Gatekeeper)"],
-    index=None, # Leaves it unselected initially
+    index=None,
     horizontal=True
 )
 
 if target_audience == "I am the Decision Maker (DM)":
     st.markdown("**Step 3: The DM Pitch**")
-    dm_script = f"Brilliant, you're speaking to {a_name} at The Redwood Group. We're calling as we believe you're currently in your renewal window, does that sound about right?\n\n(Wait for them to answer)\n\nThe only reason I'm asking is because we're looking to gather some quotes for your renewal. Who are you currently with?\n\n(Wait for them to name the supplier)\n\nHow have you found them? ... We actually work alongside all the major suppliers in the UK and get preferential rates, so if you have a supplier in mind I can prioritise pricing from them. Do you have an end date for your current supply?\n\n(Listen for end date / MPAN)\n\nIf I send you over an email, would you be able to reply with a copy of a recent utility bill? Or would WhatsApp be easier for you?"
+    
+    dm_actual_name = st.text_input("Confirm Decision Maker's Name:", value=c_name if c_name != "[Name]" else "")
+    dm_n = dm_actual_name.strip() if dm_actual_name else "[Name]"
+    
+    dm_script = f"Perfect {dm_n}, we're calling as we believe you're currently in your renewal window, does that sound about right?\n\n(Wait for them to answer)\n\nThe only reason I'm asking is because we're looking to gather some quotes for your renewal. Are you just looking for a cheaper price right now, or is there a certain supplier you had in mind, like EDF or British Gas?\n\n(Wait for them to answer)\n\nWho are you currently with?\n\n(Wait for them to name the supplier)\n\nHow have you found them? ... We actually work alongside all the major suppliers in the UK and get preferential rates. Do you have an end date for your current supply?\n\n(Listen for end date / MPAN)\n\nIf I send you over an email, would you be able to reply with a copy of a recent utility bill? Or would WhatsApp be easier for you?"
+    
     st.success("Continue with the pitch:")
     st.code(dm_script, language="text", wrap_lines=True)
 
 elif target_audience == "No, I don't deal with that (Gatekeeper)":
     st.markdown("**Step 3: Gatekeeper Navigation**")
     
-    gk_col1, gk_col2 = st.columns(2)
-    with gk_col1:
-        gk_name = st.text_input("Gatekeeper's Name (if they say it):", placeholder="e.g., Sarah")
-    with gk_col2:
-        new_dm = st.text_input("Who actually handles it?", placeholder="e.g., David")
-        
-    gk = f", {gk_name.strip()}" if gk_name else ""
-    ndm = new_dm.strip() if new_dm else "the person who handles the utility contracts"
-    
-    gk_script_1 = f"Ah, apologies for disturbing you! I completely understand. Is there any chance you could point me in the right direction{gk}? Who normally handles the bills for the site?"
+    gk_script_1 = f"Ah, apologies for disturbing you! I completely understand. Is there any chance you could point me in the right direction? Who normally handles the bills for the business?\n\n(Wait for them to answer)\n\nAlso, sorry, I didn't get your name?"
     st.warning("1. Deflect and ask for the right person:")
     st.code(gk_script_1, language="text", wrap_lines=True)
     
-    if new_dm:
-        gk_name_short = gk_name.strip() if gk_name else "mate"
-        gk_script_2 = f"Perfect, thanks {gk_name_short}. Is {ndm} around at the moment for a quick chat, or is there a better time to catch them?"
-        st.warning(f"2. Ask for {ndm}:")
-        st.code(gk_script_2, language="text", wrap_lines=True)
+    st.markdown("**Step 4: Probe & Transfer**")
+    gk_col1, gk_col2, gk_col3 = st.columns(3)
+    with gk_col1:
+        gk_name = st.text_input("Gatekeeper's Name:", placeholder="e.g., Sarah")
+    with gk_col2:
+        new_dm = st.text_input("Who actually handles it?", placeholder="e.g., David")
+    with gk_col3:
+        direct_num = st.text_input("Direct Number / Ext:", placeholder="e.g., Option 2")
+        
+    gk_n = f" {gk_name.strip()}" if gk_name else ""
+    ndm = new_dm.strip() if new_dm else "the person who handles the utility contracts"
+    
+    gk_script_2 = f"Thanks{gk_n}. Just while I have you on the phone, is there a small chance you know who the current provider is for the site? No worries if not!"
+    st.warning("2. Probe for supplier intel:")
+    st.code(gk_script_2, language="text", wrap_lines=True)
+    
+    gk_script_3 = f"Perfect. Is {ndm} around at the moment for a quick chat, or is there a better time to catch them?"
+    st.warning(f"3. Ask for {ndm}:")
+    st.code(gk_script_3, language="text", wrap_lines=True)
 
 st.markdown("---")
 
