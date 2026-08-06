@@ -26,20 +26,36 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- SESSION STATE INITIALIZATION FOR FORM RESET ---
-if "comp_name" not in st.session_state:
-    st.session_state.comp_name = ""
-if "dec_name" not in st.session_state:
-    st.session_state.dec_name = ""
-if "ind_sec" not in st.session_state:
-    st.session_state.ind_sec = ""
-if "town_post" not in st.session_state:
-    st.session_state.town_post = ""
+# We track every single input on the page so we can wipe them all at once.
+keys_to_track = [
+    "comp_name", "dec_name", "ind_sec", "town_post", 
+    "dm_conf_name", "dm_sup", "dm_cb", 
+    "sorted_sup", "sorted_cb", 
+    "gk_name", "gk_dm", "gk_num", "gk_cb", 
+    "wa_number"
+]
+
+for key in keys_to_track:
+    if key not in st.session_state:
+        st.session_state[key] = ""
+
+if "target_audience" not in st.session_state:
+    st.session_state.target_audience = None
+
+if "wa_product" not in st.session_state:
+    st.session_state.wa_product = "⚡ Electricity"
 
 def reset_form():
-    st.session_state.comp_name = ""
-    st.session_state.dec_name = ""
-    st.session_state.ind_sec = ""
-    st.session_state.town_post = ""
+    """Wipes the entire board clean for the next dial."""
+    for key in keys_to_track:
+        if key in st.session_state:
+            st.session_state[key] = ""
+    
+    if "target_audience" in st.session_state:
+        st.session_state.target_audience = None
+        
+    if "wa_product" in st.session_state:
+        st.session_state.wa_product = "⚡ Electricity"
 
 # --- AGENT PORTAL (SIDEBAR) ---
 if os.path.exists("logo.png"):
@@ -121,15 +137,16 @@ st.markdown("**Step 2: Who answered the phone?**")
 target_audience = st.radio(
     "Select their response to build the next step:",
     ["Decision Maker (DM)", "Gatekeeper (Not them)", "Objection: 'We're sorted'"],
-    index=None,
+    key="target_audience",
     horizontal=True
 )
 
 if target_audience == "Decision Maker (DM)":
     st.markdown("**Step 3: The DM Pitch & Live Notes**")
     
-    dm_actual_name = st.text_input("Confirm Decision Maker's Name:", value=c_name if c_name != "[Name]" else "", key="dm_conf_name")
-    dm_n = dm_actual_name.strip() if dm_actual_name else "[Name]"
+    dm_actual_name = st.text_input("Confirm Decision Maker's Name:", key="dm_conf_name", placeholder="e.g., John")
+    # Use actual name if entered, otherwise fallback to initial name variable
+    dm_n = dm_actual_name.strip() if dm_actual_name.strip() else c_name
     
     dm_script_p1 = f"Perfect {dm_n}, we're calling as we believe you're currently in your renewal window, does that sound about right?\n\n(Wait for them to answer)\n\nThe only reason I'm asking is because we're just gathering a bit of quick information on how your site is currently set up ahead of that renewal. Are you strictly looking for a better price right now, or is there a certain supplier you had in mind, like EDF or British Gas?\n\n(Wait for them to answer. If they tell you who they are currently with here, SKIP the next question!)\n\n[If they didn't mention it]: And who is supplying the site currently?"
     st.success("1. Pitch and Probe:")
@@ -146,7 +163,7 @@ if target_audience == "Decision Maker (DM)":
     
     st.info("📋 Auto-Generated Call Note (Click top right to copy):")
     final_sup = current_supplier if current_supplier else "TBC"
-    final_cb = dm_callback if dm_callback else "Pending/No callback set"
+    final_cb = dm_callback if dm_callback else "Pending / No callback set"
     dm_note_text = f"Spoke with {dm_n} (Decision Maker).\nAdvised currently supplied by: {final_sup}.\nOutcome / Callback: {final_cb}\nAction: Pushed for bill via Email/WhatsApp to run market comparison."
     st.code(dm_note_text, language="text", wrap_lines=True)
 
@@ -168,7 +185,7 @@ elif target_audience == "Objection: 'We're sorted'":
     
     st.info("📋 Auto-Generated Call Note (Click top right to copy):")
     final_sorted_sup = sorted_supplier if sorted_supplier else "TBC"
-    final_sorted_cb = sorted_callback if sorted_callback else "Pending/No callback set"
+    final_sorted_cb = sorted_callback if sorted_callback else "Pending / No callback set"
     sorted_note_text = f"Customer initially objected with 'sorted'.\nPivoted and uncovered supplier is: {final_sorted_sup}.\nOutcome / Callback: {final_sorted_cb}"
     st.code(sorted_note_text, language="text", wrap_lines=True)
 
@@ -205,7 +222,7 @@ elif target_audience == "Gatekeeper (Not them)":
     st.info("📋 Auto-Generated Call Note (Click top right to copy):")
     final_gk = gk_name.strip() if gk_name else "Unknown Gatekeeper"
     final_num = direct_num.strip() if direct_num else "N/A"
-    final_gk_cb = gk_callback if gk_callback else "Pending/No callback set"
+    final_gk_cb = gk_callback if gk_callback else "Pending / No callback set"
     gk_note_text = f"Spoke with Gatekeeper ({final_gk}).\nAdvised target Decision Maker is: {ndm}\nDirect Contact Info: {final_num}\nOutcome / Callback: {final_gk_cb}"
     st.code(gk_note_text, language="text", wrap_lines=True)
 
@@ -328,9 +345,10 @@ st.header("📱 7. WhatsApp Internal Handover")
 
 wa_product = st.radio(
     "Product Statement Needed:",
-    ["⚡ Electricity", "🔥 Gas", "💳 Merchant Services", "💧 Water / Waste"]
+    ["⚡ Electricity", "🔥 Gas", "💳 Merchant Services", "💧 Water / Waste"],
+    key="wa_product"
 )
-wa_number = st.text_input("Customer Mobile Number:", placeholder="e.g., 07712 345 678")
+wa_number = st.text_input("Customer Mobile Number:", key="wa_number", placeholder="e.g., 07712 345 678")
 
 if wa_product == "⚡ Electricity" or wa_product == "🔥 Gas":
     wa_msg = f"Hi {c_name}, it's {a_name} from The Redwood Group! Great catching up today. As discussed, just drop a quick photo of your latest {wa_product.lower().replace('⚡ ', '').replace('🔥 ', '')} bill here (or just the MPAN/MPRN meter number and contract end date). I'll run the numbers against the current market and send over the comparison. Thanks!"
