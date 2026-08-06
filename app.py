@@ -25,6 +25,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- SESSION STATE INITIALIZATION FOR FORM RESET ---
+if "comp_name" not in st.session_state:
+    st.session_state.comp_name = ""
+if "dec_name" not in st.session_state:
+    st.session_state.dec_name = ""
+if "ind_sec" not in st.session_state:
+    st.session_state.ind_sec = ""
+if "town_post" not in st.session_state:
+    st.session_state.town_post = ""
+
+def reset_form():
+    st.session_state.comp_name = ""
+    st.session_state.dec_name = ""
+    st.session_state.ind_sec = ""
+    st.session_state.town_post = ""
+
 # --- AGENT PORTAL (SIDEBAR) ---
 # Logo Fix: Checks for the logo file and automatically scales it to fit the sidebar
 if os.path.exists("logo.png"):
@@ -63,19 +79,26 @@ with st.sidebar:
 # --- MAIN DASHBOARD ---
 st.title("🌲 The Redwood Group - Sales Intelligence Toolkit")
 
-# --- TOP FORM (2-Column Compact Grid) ---
+# --- TOP FORM (2-Column Compact Grid with Reset Button) ---
 with st.form("prospect_form"):
     form_c1, form_c2 = st.columns(2)
     with form_c1:
-        company_name = st.text_input("Company Name", placeholder="e.g., Apex Catering Ltd")
-        business_type = st.text_input("Industry / Sector", placeholder="e.g., Restaurant, Retail")
+        company_name = st.text_input("Company Name", key="comp_name", placeholder="e.g., Apex Catering Ltd")
+        business_type = st.text_input("Industry / Sector", key="ind_sec", placeholder="e.g., Restaurant, Retail")
     with form_c2:
-        customer_name = st.text_input("Decision Maker Name", placeholder="e.g., John")
-        location = st.text_input("Town / Postcode", placeholder="e.g., Manchester")
+        customer_name = st.text_input("Decision Maker Name", key="dec_name", placeholder="e.g., John")
+        location = st.text_input("Town / Postcode", key="town_post", placeholder="e.g., Manchester")
     
-    submit_button = st.form_submit_button(label="Load Customer Profile")
+    # Place buttons side-by-side
+    btn_c1, btn_c2 = st.columns([1, 4])
+    with btn_c1:
+        submit_button = st.form_submit_button(label="Load Customer Profile")
+    with btn_c2:
+        reset_button = st.form_submit_button(label="🔄 Clear for Next Call", on_click=reset_form)
 
 # Dynamic Variables for Scripts
+c_name = company_name.strip() if company_name else "[Name]"
+# Ensuring customer_name overrides company_name if provided, fixing variable alignment
 c_name = customer_name.strip() if customer_name else "[Name]"
 comp = company_name.strip() if company_name else "[Company]"
 loc = location.strip() if location else "site"
