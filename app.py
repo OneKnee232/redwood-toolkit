@@ -26,7 +26,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- SESSION STATE INITIALIZATION FOR FORM RESET ---
-# We track every single input on the page so we can wipe them all at once.
 keys_to_track = [
     "comp_name", "dec_name", "ind_sec", "town_post", 
     "dm_conf_name", "dm_sup", "dm_cb", 
@@ -93,7 +92,7 @@ with st.sidebar:
 # --- MAIN DASHBOARD ---
 st.title("🌲 The Redwood Group - Sales Intelligence Toolkit")
 
-# --- TOP FORM (2-Column Compact Grid with Reset Button) ---
+# --- TOP FORM ---
 with st.form("prospect_form"):
     form_c1, form_c2 = st.columns(2)
     with form_c1:
@@ -109,7 +108,7 @@ with st.form("prospect_form"):
     with btn_c2:
         reset_button = st.form_submit_button(label="🔄 Clear for Next Call", on_click=reset_form)
 
-# Dynamic Variables for Scripts
+# Dynamic Variables
 c_name = customer_name.strip() if customer_name else "[Name]"
 comp = company_name.strip() if company_name else "[Company]"
 loc = location.strip() if location else "site"
@@ -145,7 +144,6 @@ if target_audience == "Decision Maker (DM)":
     st.markdown("**Step 3: The DM Pitch & Live Notes**")
     
     dm_actual_name = st.text_input("Confirm Decision Maker's Name:", key="dm_conf_name", placeholder="e.g., John")
-    # Use actual name if entered, otherwise fallback to initial name variable
     dm_n = dm_actual_name.strip() if dm_actual_name.strip() else c_name
     
     dm_script_p1 = f"Perfect {dm_n}, we're calling as we believe you're currently in your renewal window, does that sound about right?\n\n(Wait for them to answer)\n\nThe only reason I'm asking is because we're just gathering a bit of quick information on how your site is currently set up ahead of that renewal. Are you strictly looking for a better price right now, or is there a certain supplier you had in mind, like EDF or British Gas?\n\n(Wait for them to answer. If they tell you who they are currently with here, SKIP the next question!)\n\n[If they didn't mention it]: And who is supplying the site currently?"
@@ -276,8 +274,71 @@ else:
 
 st.markdown("---")
 
-# --- SECTION 4: MARKET URGENCY ---
-st.header("🌍 4. Market Urgency")
+# --- SECTION 4: CROSS-SELL PRODUCT GUIDES ---
+st.header("🛒 4. Cross-Sell Product Guides")
+
+# This creates clickable buttons across the top to switch between products
+cross_tabs = st.tabs(["🌐 Broadband", "💳 Merchant Services", "💧 Water / Waste"])
+
+with cross_tabs[0]:
+    st.markdown("### 🌐 Broadband Cheat Sheet")
+    
+    bb_col1, bb_col2 = st.columns(2)
+    
+    with bb_col1:
+        st.markdown("**📡 Types of Broadband:**")
+        st.markdown("- **Copper (ADSL):** 17MB Max (12 or 24 months ONLY. No 36/60 months)")
+        st.markdown("- **SoGEA (Part Fibre):** 18MB (Mainly Small to Medium businesses)")
+        st.markdown("- **Full Fibre (FTTP):** FASTEST in the UK")
+        
+        st.markdown("**📦 Packages:**")
+        st.markdown("- **Essential:** Standard package")
+        st.markdown("- **Enhanced:** 4G backup (if broadband goes down), CCTV & next day connectivity (router with 4G sim)")
+        st.markdown("- **Pro:** WIFI Booster, BT engineer does the setup & 4G backup")
+        
+        st.markdown("**📝 Contracts & Pricing:**")
+        st.markdown("- **Starts at:** £24/month")
+        st.markdown("- **12 Months:** Standard")
+        st.markdown("- **24 Months:** Commissionable")
+        st.markdown("- **36 - 60 Months:** Bigger discounts")
+
+    with bb_col2:
+        st.markdown("**🔄 Type of Order:**")
+        st.markdown("- Acquisition")
+        st.markdown("- New Provider")
+        st.markdown("- Switcher / Winback")
+        st.markdown("- Upgrade (With BT: 6 months / Other: 90 days buyout)")
+        
+        st.markdown("**⚔️ Competition (BT & Virgin Media):**")
+        st.markdown("- **Coverage:** Scotland, Wales & Ireland")
+        st.markdown("- **Market:** 650+ other service providers")
+        
+        st.info("💡 **Coming Soon:** EVERFLOW will shortly allow us to offer a £250 buyout!")
+
+    st.markdown("---")
+    st.markdown("### 🎯 Broadband Lead Qualification")
+    st.warning("""
+    **Ask these questions to qualify the lead:**
+    1. **Provider:** Which company are they currently with?
+    2. **Spend:** How much are they paying? *(Ideal: £30 - £40 a month)*
+    3. **End Date:** When does the contract end? *(NEEDS to be in the 6-month window, UNLESS they are on an old copper line)*
+    4. **Current Service:** Which service do they currently use?
+    5. **Details:** Get full Business Address, Contact Number, and Email.
+    6. **Callback:** Best day/time? *(If they say 2 weeks, advise them: "I will get someone to call you so you can secure a better date.")*
+    """)
+    
+    st.error("🚨 **HOT LEAD?** If they want a call NOW, contact **KARL BONNEY** immediately!")
+
+with cross_tabs[1]:
+    st.info("💳 Merchant Services Product Guide coming soon...")
+
+with cross_tabs[2]:
+    st.info("💧 Water & Waste Product Guide coming soon...")
+
+st.markdown("---")
+
+# --- SECTION 5: MARKET URGENCY ---
+st.header("🌍 5. Market Urgency")
 
 st.markdown("**The Market Pitch:**")
 war_pitch = f"Prices are all over the place right now with everything going on, and suppliers are using it as an excuse to bump up rates when contracts end. My job isn't just to quote you; it's to make sure you're protected so you don't get caught out by sudden price jumps."
@@ -289,8 +350,8 @@ st.code(window_pitch, language="text", wrap_lines=True)
 
 st.markdown("---")
 
-# --- SECTION 5: STRATEGIC CALLBACKS ---
-st.header("📅 5. Strategic Callbacks")
+# --- SECTION 6: STRATEGIC CALLBACKS ---
+st.header("📅 6. Strategic Callbacks")
 
 with st.expander("❓ 'Price vs. Supplier' Qualifier"):
     script_qual = f"Just before we run the numbers, {c_name}, let me ask you: are you strictly looking for a better price right now, or is there a certain supplier in the market you'd actually prefer to move to?"
@@ -306,8 +367,8 @@ with st.expander("📆 'Admin Day' Empathy Play"):
 
 st.markdown("---")
 
-# --- SECTION 6: CALLBACK SCHEDULER ---
-st.header("🗓️ 6. Callback Scheduler")
+# --- SECTION 7: CALLBACK SCHEDULER ---
+st.header("🗓️ 7. Callback Scheduler")
 
 call_date = st.date_input("Callback Date")
 call_time_uk = st.time_input("Agreed UK Time (Local to Customer)")
@@ -340,8 +401,8 @@ if st.button("Generate Calendar Links"):
 
 st.markdown("---")
 
-# --- SECTION 7: WHATSAPP QUICK-MESSAGE GENERATOR ---
-st.header("📱 7. WhatsApp Internal Handover")
+# --- SECTION 8: WHATSAPP QUICK-MESSAGE GENERATOR ---
+st.header("📱 8. WhatsApp Internal Handover")
 
 wa_product = st.radio(
     "Product Statement Needed:",
